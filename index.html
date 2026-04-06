@@ -666,7 +666,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 <script>
 // ═══════════════════════════════════════════
 // STATE
@@ -3951,7 +3951,13 @@ async function startCamera() {
             state.scanning = true;
             status.textContent = 'Point camera at a barcode';
             scanLine.classList.remove('paused');
-            zxingScanLoop();
+            // Wait for video to actually be playing before scanning (critical on iOS)
+            const startZXing = () => zxingScanLoop();
+            if (video.readyState >= 3 && !video.paused) {
+                startZXing();
+            } else {
+                video.addEventListener('playing', startZXing, { once: true });
+            }
         } else {
             status.textContent = 'Camera active — manual entry below';
             scanLine.classList.add('paused');
@@ -3987,9 +3993,10 @@ async function scanDetectionLoop() {
 
 async function zxingScanLoop() {
     const video = document.getElementById('scanVideo');
-    const status = document.getElementById('scanStatus');
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let frameCount = 0;
+    let canvasW = 0, canvasH = 0;
 
     const hints = new Map();
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
@@ -4008,25 +4015,31 @@ async function zxingScanLoop() {
     reader.setHints(hints);
 
     while (state.scanning && state.cameraStream) {
+        await new Promise(r => requestAnimationFrame(r));
+        frameCount++;
+        // Only decode every 3rd frame — keeps iPhone smooth while still fast enough
+        if (frameCount % 3 !== 0) continue;
+        if (video.readyState < 4 || video.videoWidth === 0) continue;
+
         try {
-            if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
-                canvas.width  = video.videoWidth;
-                canvas.height = video.videoHeight;
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const luminance = new ZXing.RGBLuminanceSource(imageData.data, canvas.width, canvas.height);
-                const bitmap    = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminance));
-                const result    = reader.decode(bitmap);
-                if (result) {
-                    state.scanning = false;
-                    handleBarcodeDetected(result.getText());
-                    return;
-                }
+            // Only resize canvas when video dimensions change (avoids expensive reallocs on iOS)
+            if (video.videoWidth !== canvasW || video.videoHeight !== canvasH) {
+                canvasW = canvas.width  = video.videoWidth;
+                canvasH = canvas.height = video.videoHeight;
+            }
+            ctx.drawImage(video, 0, 0, canvasW, canvasH);
+            const imageData = ctx.getImageData(0, 0, canvasW, canvasH);
+            const luminance = new ZXing.RGBLuminanceSource(imageData.data, canvasW, canvasH);
+            const bitmap    = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminance));
+            const result    = reader.decode(bitmap);
+            if (result) {
+                state.scanning = false;
+                handleBarcodeDetected(result.getText());
+                return;
             }
         } catch (e) {
-            // ZXing throws NotFoundException every frame with no barcode — ignore
+            // ZXing throws NotFoundException every frame with no barcode — that's normal
         }
-        await new Promise(r => requestAnimationFrame(r));
     }
 }
 
