@@ -362,9 +362,27 @@
         .warnings-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
         .warning-tag { background: rgba(255,179,0,0.1); color: var(--neon-amber); border-radius: 50px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
         .ingredients-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
-        .ingredient-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border-radius: 10px; }
+        .ingredient-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border-radius: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s; }
+        .ingredient-item:active { background: var(--surface); }
         .ingredient-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
         .ingredient-name { font-size: 13px; font-weight: 500; color: var(--text-2); flex: 1; }
+        /* ── Ingredient Info Modal ── */
+        .ing-info-overlay { position:absolute;inset:0;z-index:600;display:none; }
+        .ing-info-overlay.open { display:block; }
+        .ing-info-backdrop { position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px); }
+        .ing-info-sheet { position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px 36px;max-height:82%;overflow-y:auto;transform:translateY(100%);transition:transform 0.32s cubic-bezier(.25,.8,.25,1); }
+        .ing-info-overlay.open .ing-info-sheet { transform:translateY(0); }
+        .ing-info-handle { width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 18px; }
+        .ing-info-name { font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.2; }
+        .ing-info-badge { display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:50px;font-size:11px;font-weight:700;margin-bottom:18px; }
+        .ing-info-badge.harmful { background:rgba(255,61,87,0.12);color:#FF3D57;border:1px solid rgba(255,61,87,0.25); }
+        .ing-info-badge.safe { background:rgba(0,230,118,0.12);color:#00E676;border:1px solid rgba(0,230,118,0.25); }
+        .ing-info-section { margin-bottom:18px; }
+        .ing-info-section-title { font-size:10px;font-weight:800;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px; }
+        .ing-info-text { font-size:13px;color:var(--text-2);line-height:1.7; }
+        .ing-info-btn { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:13px;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;-webkit-tap-highlight-color:transparent;transition:background 0.15s; }
+        .ing-info-btn:active { background:var(--bg); }
+        .ing-info-btn.red { color:#FF6B6B;border-color:rgba(255,107,107,0.2);background:rgba(255,107,107,0.06); }
         .ingredient-status { font-size: 11px; font-weight: 600; }
         .alt-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
         .alt-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: border-color 0.2s; }
@@ -867,6 +885,15 @@
     <div class="product-sheet" id="productSheet">
         <div class="sheet-handle"></div>
         <div class="sheet-content" id="sheetContent"></div>
+    </div>
+
+    <!-- ═══ INGREDIENT INFO MODAL ═══ -->
+    <div class="ing-info-overlay" id="ingInfoOverlay">
+        <div class="ing-info-backdrop" onclick="closeIngInfo()"></div>
+        <div class="ing-info-sheet">
+            <div class="ing-info-handle"></div>
+            <div id="ingInfoContent"></div>
+        </div>
     </div>
 
     <!-- ═══ BOTTOM NAV (5 items) ═══ -->
@@ -4540,14 +4567,14 @@ async function openUnknownBarcode(barcode) {
                 ${toxAction ? `<div class="breakdown-detail">${toxAction}</div>` : ''}
             </div>
             ${ingredientList.length ? `
-            <div class="breakdown-title">Ingredients</div>
+            <div class="breakdown-title">Ingredients <span style="font-size:10px;font-weight:500;color:var(--text-3)"> — tap any to learn more</span></div>
             <div class="ingredients-list">
                 ${ingredientList.map(ing=>`
-                <div class="ingredient-item">
-                    <div class="ingredient-dot" style="background:${ing.harmful?'var(--neon-red)':'var(--neon-green)'}"></div>
+                <div class="ingredient-item" onclick="openIngredientInfo('${ing.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', ${ing.harmful})">
+                    <div class="ingredient-dot" style="background:${ing.harmful?'#FF3D57':'#00E676'}"></div>
                     <div class="ingredient-name">${ing.name}</div>
-                    <div class="ingredient-status" style="color:${ing.harmful?'var(--neon-red)':'var(--text-3)'}">
-                        ${ing.harmful ? '&#x26A0; Concern' : '&#x2713;'}
+                    <div class="ingredient-status" style="color:${ing.harmful?'#FF3D57':'var(--text-3)'}">
+                        ${ing.harmful ? '⚠ Tap' : 'ⓘ'}
                     </div>
                 </div>`).join('')}
             </div>` : ''}
@@ -4857,11 +4884,11 @@ function renderSheet(prod) {
         <div class="breakdown-title">Ingredients</div>
         <div class="ingredients-list">
             ${prod.ingredients.map(ing=>`
-            <div class="ingredient-item">
-                <div class="ingredient-dot" style="background:${ing.harmful?'var(--red)':'var(--emerald)'}"></div>
+            <div class="ingredient-item" onclick="openIngredientInfo('${ing.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', ${ing.harmful})">
+                <div class="ingredient-dot" style="background:${ing.harmful?'#FF3D57':'#00E676'}"></div>
                 <div class="ingredient-name">${ing.name}</div>
-                <div class="ingredient-status" style="color:${ing.harmful?'var(--red)':'var(--gray-300)'}">
-                    ${ing.harmful?'⚠ Concern':'✓'}
+                <div class="ingredient-status" style="color:${ing.harmful?'#FF3D57':'var(--text-3)'}">
+                    ${ing.harmful?'⚠ Tap to learn':'ⓘ'}
                 </div>
             </div>`).join('')}
         </div>
@@ -5652,6 +5679,93 @@ function renderFeaturedPantries() {
             fp.items.map(i => '<div class="featured-item-chip"><span>' + i.emoji + '</span>' + i.name.split(' ').slice(0,2).join(' ') + '</div>').join('') +
             '</div></div>';
     }).join('');
+}
+
+// ═══════════════════════════════════════════
+// INGREDIENT INFO DATABASE
+// ═══════════════════════════════════════════
+const INGREDIENT_INFO = {
+    'enriched flour': { how: 'Wheat is stripped of its bran and germ (removing fiber, vitamins, and minerals), then bleached with chemicals like chlorine dioxide or benzoyl peroxide. Synthetic vitamins are added back — hence "enriched."', effects: 'Spikes blood sugar almost as fast as pure sugar. The bleaching process can create alloxan, a compound that destroys beta cells in the pancreas in animal studies. Stripped of natural fiber, it offers no digestive benefit and is linked to obesity, type 2 diabetes, and chronic inflammation.' },
+    'bleached flour': { how: 'Wheat flour treated with bleaching agents — chlorine dioxide, benzoyl peroxide, or chlorine gas — to whiten it and speed aging. The bleach reacts with the flour proteins.', effects: 'Creates byproducts including alloxan (a diabetes-inducing compound in animal studies) and destroys natural vitamin E. Banned in the UK and several EU countries. Linked to hyperactivity and digestive inflammation.' },
+    'high fructose corn syrup': { how: 'Corn starch is broken down into glucose using enzymes, then a portion is converted to fructose using glucose isomerase enzyme. The result is a cheap liquid sweetener with ~55% fructose.', effects: 'Fructose is metabolized entirely in the liver — it overloads it and converts directly to fat (triglycerides). Strongly linked to fatty liver disease, insulin resistance, obesity, and metabolic syndrome. Does not trigger leptin (the fullness hormone) the way glucose does, making it very easy to overconsume.' },
+    'hfcs': { how: 'Abbreviation for High Fructose Corn Syrup — corn starch enzymatically converted to a high-fructose liquid sweetener.', effects: 'Overloads the liver with fructose, promoting fat storage and non-alcoholic fatty liver disease. Bypasses normal hunger hormones. Strongly associated with obesity and type 2 diabetes.' },
+    'corn syrup': { how: 'Corn starch broken down with acids or enzymes into glucose (dextrose). Unlike HFCS, regular corn syrup is mostly glucose.', effects: 'Pure glucose — spikes blood sugar rapidly. Often derived from GMO corn. Empty calories with no nutritional value, contributing to blood sugar swings and tooth decay.' },
+    'sodium nitrite': { how: 'Synthesized industrially from sodium nitrate. Added to cured meats — bacon, hot dogs, deli meats — as a preservative and to maintain the pink/red color.', effects: 'Reacts with proteins in the stomach to form nitrosamines — potent carcinogens classified as "probably carcinogenic to humans" (Group 2A) by the WHO\'s IARC. Linked to colorectal cancer, stomach cancer, and childhood leukemia. The World Cancer Research Fund recommends avoiding processed meats entirely because of this.' },
+    'sodium nitrate': { how: 'A naturally occurring mineral salt also produced synthetically. Used in cured and processed meats as a longer-acting preservative — it slowly converts to nitrite.', effects: 'Converts to nitrite and then to carcinogenic nitrosamines in the body. The IARC has classified processed meats as a Group 1 carcinogen (definite cause of cancer) largely because of nitrate/nitrite content. Linked to colorectal and gastric cancer.' },
+    'bht': { how: 'Butylated hydroxytoluene — a petroleum-derived synthetic antioxidant made from coal tar derivatives. Added to cereals, chips, oils, and even food packaging to prevent oxidation and extend shelf life.', effects: 'Classified as a possible human carcinogen (Group 2B) by the IARC. Animal studies show liver and kidney damage and increased tumor growth. Acts as an endocrine disruptor. Banned in infant foods in the UK. Accumulates in body fat over time and may promote tumor growth at high doses.' },
+    'bha': { how: 'Butylated hydroxyanisole — a petroleum-based synthetic antioxidant made from p-methoxyphenol and isobutylene. Chemically very similar to BHT.', effects: 'Listed as a known carcinogen by the US National Toxicology Program — it caused tumors in animal studies. An endocrine disruptor that mimics estrogen and may interfere with hormonal function. Banned or restricted in Japan and several EU countries. Linked to thyroid hormone disruption.' },
+    'tbhq': { how: 'Tertiary butylhydroquinone — a petroleum derivative made from hydroquinone (also used in skin bleaching creams). Used as a preservative in oils and packaged snacks.', effects: 'High doses cause nausea, vomiting, delirium, and collapse. Animal studies show DNA damage and precancerous stomach tumors. Some research suggests it weakens the immune response to influenza vaccines. The FDA limits it to 0.02% of oil content but safety concerns are ongoing.' },
+    'carrageenan': { how: 'Extracted from red seaweed using alkaline processing (potassium hydroxide). Despite sounding natural, the processing creates degraded forms (poligeenan) that are highly inflammatory in the gut.', effects: 'Researchers use it to intentionally cause gut inflammation in animal studies — it\'s a standard tool for inducing colitis. Linked to intestinal ulcers, irritable bowel syndrome, and increased colon cancer risk. The IARC classifies degraded carrageenan as a possible carcinogen. Banned from infant formula in the EU.' },
+    'monosodium glutamate': { how: 'Made by fermenting starch, sugar cane, or molasses with bacteria (Corynebacterium glutamicum). The bacteria produce glutamic acid which is processed with sodium to create MSG crystals.', effects: 'Some people experience "MSG symptom complex" — headaches, flushing, sweating, and chest tightness. Some studies link heavy consumption to obesity (may override satiety signals) and liver damage. Commonly hidden under names like "yeast extract," "hydrolyzed protein," or "natural flavors."' },
+    ' msg': { how: 'See Monosodium Glutamate — MSG is the abbreviation.', effects: 'Associated with headaches, sweating, flushing, and chest tightness in sensitive individuals. May hide under ingredient names like "yeast extract" or "hydrolyzed protein."' },
+    'aspartame': { how: 'Made by combining two amino acids — phenylalanine and aspartic acid — through chemical synthesis. The result is a compound 200x sweeter than sugar.', effects: 'The IARC classified it "possibly carcinogenic to humans" (Group 2B) in 2023. Breaks down in the body into phenylalanine, aspartate, and methanol (a toxic alcohol). Linked to headaches, anxiety, depression, and seizures in sensitive people. People with phenylketonuria (PKU) cannot process it at all. Some studies show it increases appetite — the opposite of its intended purpose.' },
+    'saccharin': { how: 'The oldest artificial sweetener (discovered 1879). Made from toluene — a petrochemical — or phthalic anhydride through oxidation. 300-400x sweeter than sugar.', effects: 'Caused bladder cancer in rats which led to a temporary US ban. A 2023 Nature study found saccharin may cause DNA damage. Disrupts gut bacteria in ways that impair blood sugar regulation. May alter the gut microbiome in ways that cause glucose intolerance.' },
+    'acesulfame': { how: 'Acesulfame potassium (Ace-K) — synthesized from acetoacetic acid and potassium fluoride in an industrial chemical process.', effects: 'Contains methylene chloride — a carcinogen — as a production byproduct. Animal studies showed lung and breast tumors, leukemia, and thymus abnormalities. Crosses the blood-brain barrier and the placenta. May disrupt gut microbiome and insulin response. Approved based on limited 1970s studies.' },
+    'sucralose': { how: 'Made by chlorinating regular sugar — replacing three hydroxyl groups with chlorine atoms. This makes it 600x sweeter and supposedly indigestible.', effects: 'A 2023 study found sucralose-6-acetate (a metabolite) is genotoxic — it damages DNA. Kills beneficial gut bacteria. Despite having no calories, linked to elevated insulin and blood sugar responses. When baked at high temperatures, can combine with glycerol to form harmful chloropropanols.' },
+    'red 40': { how: 'Also called Allura Red AC — a petroleum-derived synthetic dye made through azo chemistry, the same chemical family used for industrial textile dyes.', effects: 'Linked to hyperactivity and behavioral issues in children — the UK mandates warning labels on products containing it. Contains benzidine (a known human carcinogen) as a contaminant. May trigger migraines, hives, and asthma. The CSPI has petitioned the FDA to ban it. Already restricted in several European countries for children\'s food.' },
+    'yellow 5': { how: 'Tartrazine — a synthetic lemon-yellow azo dye derived from petroleum, made through a diazotization reaction involving coal tar chemicals.', effects: 'Triggers allergic reactions in aspirin-sensitive people. The EU requires a warning label: "may have an adverse effect on activity and attention in children." Contains trace amounts of benzidine, a known carcinogen. Can cause hives, asthma, and hay fever. Linked to behavioral problems in children when combined with sodium benzoate.' },
+    'yellow 6': { how: 'Sunset Yellow FCF — another petroleum-derived azo dye with similar chemistry to Yellow 5.', effects: 'Animal studies showed adrenal gland tumors. May cause hives and rhinitis. Like all azo dyes, may contain carcinogenic contaminants including benzidine. The EU requires hyperactivity warning labels. Linked to behavioral issues in children when combined with sodium benzoate.' },
+    'blue 1': { how: 'Brilliant Blue FCF — a synthetic triphenylmethane dye made from aromatic hydrocarbons derived from petroleum or coal tar.', effects: 'Animal studies showed possible kidney tumors. Can cross the blood-brain barrier — caused brain lesions in some animal injection studies. May cause allergic reactions. FDA-approved but based on limited older studies.' },
+    'blue 2': { how: 'Indigo Carmine — an indigo dye made from petroleum-derived indoxyl through a sulfonation process.', effects: 'Studies showed brain and testicular tumors in male rats. May trigger allergic reactions. The CSPI rates it as potentially unsafe. Safety data used for its approval is considered outdated by current standards.' },
+    'titanium dioxide': { how: 'Mined from ilmenite ore, then processed with sulfuric acid or chlorine gas to create ultra-fine white nanoparticles used as a food whitener in candies, gum, and frosting.', effects: 'The European Food Safety Authority declared it "no longer safe" in 2021 and France banned it in food in 2020. Nanoparticles may pass through the gut lining and accumulate in organs. Animal studies show inflammation, DNA damage, and potential carcinogenicity. Can damage the gut microbiome. Still allowed in the US.' },
+    'brominated vegetable oil': { how: 'Vegetable oil reacted with bromine gas under high pressure and temperature. The bromine binds to fat molecules to make citrus flavors stay suspended in drinks.', effects: 'Bromine accumulates in fatty tissue, blood, and breast milk. Can cause memory loss, skin problems, and nerve damage. Competes with iodine in the body, potentially disrupting thyroid function. Banned in many countries for decades. Major soda companies voluntarily removed it in 2013-2014 but it remains in some smaller brands.' },
+    'potassium bromate': { how: 'Made by bubbling bromine gas through potassium hydroxide solution. Added to bread dough to strengthen gluten and boost rise. Should break down during baking but often doesn\'t fully.', effects: 'Classified as a possible human carcinogen (Group 2B) by the IARC. Caused thyroid and kidney tumors in animal studies. Banned in the EU, UK, Canada, Brazil, China, and many other countries. The FDA only asked bakers to "voluntarily" stop using it in 1991 — it was never formally banned in the US. Residual bromate remaining after baking is the main concern.' },
+    'sodium benzoate': { how: 'Synthesized by reacting benzoic acid (derived from benzene — a petroleum product) with sodium hydroxide. Used as a preservative in soft drinks, juices, and condiments.', effects: 'Reacts with vitamin C (ascorbic acid) in beverages to form benzene — a known human carcinogen that causes leukemia. UK researchers found sodium benzoate combined with artificial dyes significantly increased hyperactivity in children. Linked to DNA damage and may trigger hives and asthma.' },
+    'calcium propionate': { how: 'Made by reacting propionic acid (a fermentation byproduct) with calcium hydroxide. Added to bread and baked goods to prevent mold growth.', effects: 'Studies link it to irritability, restlessness, inattention, and sleep problems in children — effects that reversed when it was removed from the diet. A study in the Journal of Paediatrics and Child Health found significant behavioral changes in children consuming it. May also interfere with insulin production.' },
+    'artificial flavor': { how: 'Thousands of synthetic chemicals can be labeled as "artificial flavor" with zero specific disclosure required. Many are petroleum or coal-tar derived. A single "artificial flavor" listing can represent dozens of chemical compounds.', effects: 'Without any disclosure, you have no way to know what you\'re consuming. Some artificial flavor chemicals are linked to cancer and nerve damage. Diacetyl (used as artificial butter flavor) caused severe, irreversible lung disease called "popcorn lung" in factory workers. The FDA\'s GRAS system is largely self-regulated by the food industry.' },
+    'artificial colour': { how: 'Synthetic dyes made from petroleum or coal tar. Includes Red 40, Yellow 5, Yellow 6, Blue 1, Blue 2, and others. Made through azo coupling or triphenylmethane chemistry.', effects: 'All synthetic dyes in the EU must carry this warning: "may have an adverse effect on activity and attention in children." Multiple dyes are made from benzidine-based chemistry — benzidine is a known human carcinogen. Linked to hyperactivity, allergic reactions, and potential long-term cancer risk from contaminants.' },
+    'artificial color': { how: 'Synthetic dyes made from petroleum or coal tar derivatives. Examples include Red 40, Yellow 5, Blue 1, etc.', effects: 'All petroleum-derived synthetic dyes are linked to hyperactivity in children. Several carry carcinogenic contaminants. The EU requires warning labels on food containing them. Many countries have banned specific dyes still approved in the US.' },
+    'soybean oil': { how: 'Soybeans are crushed and oil is extracted using hexane — a petroleum-derived solvent. The oil is then degummed, refined with sodium hydroxide, bleached with clay, and deodorized at 460°F+ to remove the rancid smell this process creates.', effects: 'Over 50% omega-6 linoleic acid, which dramatically shifts the body\'s omega-6 to omega-3 ratio and drives chronic inflammation. A 2020 UC Riverside study found soybean oil caused genetic changes in the hypothalamus affecting obesity, diabetes, anxiety, and Alzheimer\'s disease markers in mice. Oxidizes easily when heated, creating toxic aldehydes.' },
+    'soy oil': { how: 'Same as soybean oil — hexane solvent extraction followed by refining, bleaching, and high-heat deodorization.', effects: 'High omega-6 content drives systemic inflammation. Oxidizes rapidly under heat, producing harmful aldehydes linked to neurological disease. Linked to obesity, metabolic syndrome, and inflammatory conditions.' },
+    'canola oil': { how: 'Made from rapeseed using hexane solvent extraction, then deodorized at 460-520°F to remove the rancid smell — a process that creates trans fats. "Canola" was developed in Canada in the 1970s from rapeseed bred for lower erucic acid.', effects: 'High-heat deodorization creates trans fats (1-4% even in "0 trans fat" labeled products — the FDA allows rounding down). High omega-6 content promotes inflammation. Oxidizes easily, generating harmful aldehydes when heated for cooking. Contains trace erucic acid linked to heart lesions in animal studies.' },
+    'rapeseed oil': { how: 'Same process as canola oil — canola is simply a bred variety of rapeseed with lower erucic acid content. Hexane-extracted and high-heat deodorized.', effects: 'Erucic acid linked to heart tissue damage. High-heat processing creates trans fats. High omega-6 content disrupts the omega-6/omega-3 balance and promotes chronic inflammation.' },
+    'sunflower oil': { how: 'Sunflower seeds are pressed and hexane-extracted, then refined, bleached, and deodorized at high temperatures.', effects: 'Up to 68% omega-6 linoleic acid — one of the highest of any common oil. A 2017 clinical study found people who replaced saturated fat with linoleic-rich oils had more heart attacks. Breaks down under heat into 4-HNE — a toxic aldehyde linked to Alzheimer\'s, Parkinson\'s, and DNA damage. Heavily marketed as "healthy" despite these concerns.' },
+    'corn oil': { how: 'A byproduct of corn wet milling. Corn germ is hexane-extracted then degummed, bleached, and deodorized at high temperatures.', effects: 'About 58% omega-6 linoleic acid. Drives the same inflammatory cascade as other seed oils. Usually made from GMO corn. Oxidizes under heat, creating toxic aldehydes. The refining process destroys natural antioxidants while generating new harmful compounds.' },
+    'cottonseed oil': { how: 'Extracted from cotton seeds — a byproduct of the cotton industry. Cotton is one of the most heavily pesticide-treated crops in the world. Hexane-extracted and heavily refined.', effects: 'Contains gossypol — a natural toxin that can affect fertility and cardiac function (partially removed in refining). Cotton is not classified as a food crop, meaning different (looser) pesticide regulations apply. High omega-6 content. High in saturated fat relative to other seed oils. Associated with cardiovascular disease.' },
+    'safflower oil': { how: 'Extracted from safflower seeds with hexane solvent extraction and high-temperature refining. Heavily marketed as a healthy oil due to its high polyunsaturated content.', effects: 'Conventional safflower oil is up to 78% omega-6 linoleic acid — the highest of any common oil. A 2010 clinical study found women who substituted safflower oil for saturated fat had higher rates of heart disease and death. Promotes inflammation through omega-6 pathway overload.' },
+    'grapeseed oil': { how: 'A wine-making byproduct — grape seeds are dried and hexane-extracted. Often marketed as "natural" and "antioxidant-rich" but undergoes the same heavy industrial refining as other seed oils.', effects: 'About 70% omega-6 linoleic acid. The heavy refining destroys any polyphenols that were in the original grapes. Same inflammatory risks as other high-omega-6 seed oils. Oxidizes rapidly under heat. The "healthy" marketing is not supported by clinical evidence.' },
+    'vegetable oil': { how: 'Usually a blend of industrial seed oils — most commonly soybean, canola, corn, and/or sunflower oil. Hexane-extracted, then refined, bleached, and deodorized at high temperatures. The vague label hides which oils are actually inside.', effects: 'All the problems of seed oils combined. The intentionally vague labeling prevents you from knowing what you\'re consuming. High omega-6 content drives chronic inflammation. Processing creates trans fats and toxic aldehydes. The refining destroys natural vitamins while generating new harmful compounds.' },
+    'hydrogenated oil': { how: 'Vegetable oil forced through hydrogen gas under high pressure and heat with a metal catalyst (usually nickel). Converts some unsaturated fats to saturated and creates trans fats as a byproduct.', effects: 'Creates trans fats. Even "fully hydrogenated" oils may contain some trans fats and are high in problematic stearic acid. Trans fats raise LDL (bad) cholesterol, lower HDL (good) cholesterol, cause systemic inflammation, and are directly linked to heart disease, stroke, and type 2 diabetes.' },
+    'partially hydrogenated': { how: 'The partial hydrogenation of vegetable oil — intentionally stopped partway through to create a semi-solid fat (like Crisco). This process creates large amounts of trans fats.', effects: 'The most dangerous dietary fat known to science. The FDA determined there is NO safe level of trans fat consumption. Trans fats increase heart disease risk, raise bad cholesterol, lower good cholesterol, cause systemic inflammation, and impair cell membrane function throughout the body. The FDA revoked GRAS status in 2018.' },
+    'interesterified': { how: 'Fatty acids are chemically rearranged between triglycerides using a metal catalyst or enzymes. Developed as a direct replacement for trans fats after partial hydrogenation was banned.', effects: 'Emerging as potentially as harmful as the trans fats it replaced. A 2007 Brandeis University study found interesterified fats lowered HDL cholesterol, raised blood glucose, and depressed insulin response even compared to trans fats. Long-term human safety data barely exists — it\'s a relatively new ingredient with minimal safety testing.' },
+    'caramel color': { how: 'Made by heating sugar with ammonia and/or sulfites under pressure. Class III and IV (the most common types used in sodas) use ammoniated process that creates harmful byproducts.', effects: 'The ammonia process creates 4-methylimidazole (4-MEI) — classified as a probable carcinogen by the IARC. California Prop 65 requires cancer warning labels on products with significant 4-MEI. Animal studies showed increased lung tumors. The name implies it\'s simple browned sugar — it\'s an industrial chemical process.' },
+    'maltodextrin': { how: 'Made by partially hydrolyzing starch (usually corn, wheat, or potato) with acids or enzymes. Creates a fine white powder used as a cheap filler, thickener, or flavor carrier.', effects: 'Glycemic index of 85-105 — higher than table sugar (65). Can spike blood sugar faster than sugar despite tasting bland. May disrupt gut bacteria by promoting harmful E. coli strains (including resistant ones). Almost always derived from GMO corn. Provides zero nutritional value while rapidly elevating blood sugar.' },
+    'natural flavors': { how: 'Must originate from a plant or animal source, but can then be processed extensively in a lab. A single "natural flavors" listing can contain up to 100 chemical compounds. The "natural" label only requires the original source was natural — not that the process is minimal.', effects: 'The vagueness is the problem — "natural flavors" can hide dozens of chemicals, potential allergens, and glutamate compounds. Castoreum (extracted from beaver glands near the anus) and carmine (crushed insects) are both "natural flavors." People with allergies or religious dietary restrictions have no way to know what\'s actually in it.' },
+    'sugar': { how: 'Extracted from sugarcane or sugar beets through crushing, purification with lime, evaporation, and crystallization. The refining removes all minerals and fiber, leaving pure sucrose.', effects: 'Feeds harmful gut bacteria and promotes overgrowth of Candida. Causes blood sugar spikes and crashes that drive hunger and cravings. Excess sugar is converted to fat in the liver. Linked to tooth decay, insulin resistance, obesity, non-alcoholic fatty liver disease, and chronic inflammation. Sucrose breaks down into 50% fructose which overloads the liver.' },
+};
+
+function lookupIngredient(name) {
+    if (!name) return null;
+    const n = name.toLowerCase().trim();
+    if (INGREDIENT_INFO[n]) return INGREDIENT_INFO[n];
+    for (const key of Object.keys(INGREDIENT_INFO)) {
+        if (n.includes(key) || key.includes(n)) return INGREDIENT_INFO[key];
+    }
+    return null;
+}
+
+function openIngredientInfo(name, harmful) {
+    const info = lookupIngredient(name);
+    const el = document.getElementById('ingInfoContent');
+    if (!el) return;
+    const q = encodeURIComponent(name + ' food ingredient health effects');
+    let html = '<div class="ing-info-name">' + name + '</div>' +
+        '<div class="ing-info-badge ' + (harmful ? 'harmful' : 'safe') + '">' +
+        (harmful ? '⚠️ Flagged Ingredient' : '✓ Generally Safe') + '</div>';
+    if (info) {
+        if (info.how) html += '<div class="ing-info-section"><div class="ing-info-section-title">🔬 How It\'s Made</div><div class="ing-info-text">' + info.how + '</div></div>';
+        if (info.effects) html += '<div class="ing-info-section"><div class="ing-info-section-title">⚠️ Health Effects</div><div class="ing-info-text">' + info.effects + '</div></div>';
+    } else {
+        html += '<div class="ing-info-text" style="margin-bottom:16px;color:var(--text-3);">Tap below to search research on this ingredient.</div>';
+    }
+    html += '<div class="ing-info-btn" onclick="window.open(\'https://www.google.com/search?q=' + q + '\',\'_blank\')">🔍 Search Research</div>';
+    html += '<div class="ing-info-btn" onclick="window.open(\'https://www.ewg.org/foodscores/\',\'_blank\')">🧪 EWG Food Database</div>';
+    el.innerHTML = html;
+    document.getElementById('ingInfoOverlay').classList.add('open');
+}
+
+function closeIngInfo() {
+    document.getElementById('ingInfoOverlay').classList.remove('open');
 }
 
 function checkShareCodeOnLoad() {
