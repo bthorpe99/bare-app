@@ -88,8 +88,8 @@
             -webkit-tap-highlight-color: transparent;
         }
         .nav-item.active { color: var(--accent2); }
-        .nav-item svg { width: 22px; height: 22px; }
-        .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
+        .nav-item svg { width: 20px; height: 20px; }
+        .nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1px; }
         .nav-scan {
             flex: 1; display: flex; flex-direction: column; align-items: center;
             cursor: pointer; border: none; background: none;
@@ -644,6 +644,44 @@
         ═══════════════════════════════════════════ */
         .mascot-actions { display:flex;align-items:center;gap:8px;margin-left:auto; }
 
+        
+        /* â•â•â• COMMUNITY TAB â•â•â• */
+        .community-header { padding: 52px 20px 16px; background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%); border-bottom: 1px solid var(--border); }
+        .community-title { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+        .community-sub { font-size: 13px; color: var(--text-3); margin-top: 4px; }
+        .share-card { margin: 16px 20px; background: linear-gradient(135deg, rgba(137,207,240,0.12), rgba(179,157,219,0.12)); border: 1px solid rgba(137,207,240,0.25); border-radius: 18px; padding: 18px; }
+        .share-card-title { font-size: 13px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+        .share-card-stats { display: flex; gap: 16px; margin-bottom: 14px; }
+        .share-stat { text-align: center; }
+        .share-stat-val { font-size: 22px; font-weight: 800; color: var(--text); }
+        .share-stat-label { font-size: 10px; color: var(--text-3); font-weight: 600; }
+        .share-code-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .share-code-text { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 1px; font-family: monospace; flex: 1; word-break: break-all; }
+        .copy-btn { padding: 7px 14px; border-radius: 8px; background: var(--accent); color: #0D1728; font-size: 12px; font-weight: 700; cursor: pointer; border: none; font-family: 'Space Grotesk', sans-serif; flex-shrink: 0; margin-left: 8px; -webkit-tap-highlight-color: transparent; }
+        .gen-share-btn { width: 100%; padding: 13px; border-radius: 12px; background: var(--accent); color: #0D1728; font-size: 15px; font-weight: 700; cursor: pointer; border: none; font-family: 'Space Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .lookup-section { margin: 0 20px 16px; }
+        .lookup-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+        .lookup-row { display: flex; gap: 8px; }
+        .lookup-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 14px; font-family: 'Space Grotesk', sans-serif; color: var(--text); outline: none; }
+        .lookup-input::placeholder { color: var(--text-3); }
+        .lookup-input:focus { border-color: var(--accent); }
+        .lookup-btn { padding: 12px 18px; border-radius: 12px; background: var(--surface2); border: 1.5px solid var(--accent); color: var(--accent); font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Space Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .shared-pantry-view { margin: 0 20px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .shared-pantry-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .shared-pantry-name { font-size: 15px; font-weight: 800; color: var(--text); }
+        .shared-pantry-meta { font-size: 12px; color: var(--text-3); }
+        .shared-pantry-items { padding: 8px 0; }
+        .shared-pantry-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        .shared-pantry-item:last-child { border-bottom: none; }
+        .community-section-title { font-size: 14px; font-weight: 700; color: var(--text); padding: 16px 20px 10px; }
+        .featured-card { margin: 0 20px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .featured-card-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+        .featured-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #89CFF0, #B39DDB); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .featured-user { font-size: 14px; font-weight: 700; color: var(--text); }
+        .featured-time { font-size: 11px; color: var(--text-3); }
+        .featured-avg { font-size: 14px; font-weight: 800; margin-left: auto; flex-shrink: 0; }
+        .featured-items-row { display: flex; gap: 6px; padding: 10px 14px; overflow-x: auto; }
+        .featured-item-chip { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 600; color: var(--text-2); display: flex; align-items: center; gap: 5px; }
         </style>
 </head>
 <body>
@@ -853,6 +891,10 @@
         <button class="nav-item" id="nav-history" onclick="switchView('history')">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span class="nav-label">History</span>
+        </button>
+            <button class="nav-item" id="nav-community" onclick="switchView('community')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="nav-label">Community</span>
         </button>
     </nav>
 
@@ -4035,6 +4077,7 @@ async function switchView(view) {
     state.currentView = view;
 
     if (view === 'scanner') await startCamera();
+    if (view === 'community') { renderShareCardStats(); renderFeaturedPantries(); }
     if (view === 'map')     initMap();
     if (view === 'pantry')  renderPantry();
     if (view === 'history') renderHistory();
@@ -4962,6 +5005,7 @@ renderScanChips();
 renderRecent();
 updateStats();
 initFeatures();
+checkShareCodeOnLoad();
 
 // Splash dismiss
 setTimeout(() => {
@@ -5481,6 +5525,142 @@ function initFeatures() {
     initKidMode();
 }
 
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// COMMUNITY TAB
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+const FEATURED_PANTRIES = [
+    { name: 'CleanEater_Jay', avatar: 'ðŸ¥—', ts: 'Yesterday', items: [
+        { id:'cheerios',        name:'Cheerios',          emoji:'ðŸŒ¾', score:71 },
+        { id:'siggi-plain',     name:'Siggi Plain Yogurt',emoji:'ðŸ¥›', score:91 },
+        { id:'rx-bar-choc',     name:'RX Bar Choc',       emoji:'ðŸ«', score:82 },
+        { id:'ezekiel-bread',   name:'Ezekiel Bread',     emoji:'ðŸž', score:94 },
+        { id:'almond-butter',   name:'Almond Butter',     emoji:'ðŸ¥œ', score:87 },
+    ]},
+    { name: 'FitMom_Tasha', avatar: 'ðŸ’ª', ts: '2 days ago', items: [
+        { id:'kind-bar',        name:'KIND Bar',           emoji:'ðŸ«', score:74 },
+        { id:'oat-milk',        name:'Oat Milk',           emoji:'ðŸ¥›', score:68 },
+        { id:'greek-yogurt',    name:'Greek Yogurt',       emoji:'ðŸ¥›', score:88 },
+        { id:'brown-rice',      name:'Brown Rice',         emoji:'ðŸš', score:92 },
+    ]},
+    { name: 'WholeFoodsKing', avatar: 'ðŸ‘‘', ts: '3 days ago', items: [
+        { id:'365-olive',       name:'365 Olive Oil',      emoji:'ðŸ«’', score:95 },
+        { id:'wild-salmon',     name:'Wild Salmon',        emoji:'ðŸŸ', score:97 },
+        { id:'chia-seeds',      name:'Chia Seeds',         emoji:'ðŸŒ±', score:98 },
+        { id:'bone-broth',      name:'Bone Broth',         emoji:'ðŸµ', score:90 },
+    ]},
+];
+
+function initCommunityTab() {
+    renderShareCardStats();
+    renderFeaturedPantries();
+}
+
+function renderShareCardStats() {
+    const saved = state.pantry.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+    const el = document.getElementById('shareCardStats');
+    if (!el) return;
+    const avg = saved.length ? Math.round(saved.reduce((a,b) => a+b.score, 0) / saved.length) : 0;
+    el.innerHTML = '<div class="share-stat"><div class="share-stat-val">' + saved.length + '</div><div class="share-stat-label">Products</div></div>' +
+        '<div class="share-stat"><div class="share-stat-val" style="color:' + getScoreColor(avg) + '">' + (avg || 'â€”') + '</div><div class="share-stat-label">Avg Score</div></div>' +
+        '<div class="share-stat"><div class="share-stat-val">' + (state.streak || 0) + 'ðŸ”¥</div><div class="share-stat-label">Streak</div></div>';
+}
+
+function generateShareCode() {
+    const saved = state.pantry.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+    if (!saved.length) { showToast('Add products to your pantry first!'); return; }
+    const data = {
+        v: 1,
+        n: 'Anonymous',
+        ts: Date.now(),
+        items: saved.map(p => ({ id: p.id, name: p.name, emoji: p.emoji, score: p.score, brand: p.brand }))
+    };
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    const wrap  = document.getElementById('shareCodeWrap');
+    const codeEl = document.getElementById('shareCodeText');
+    if (wrap && codeEl) {
+        codeEl.textContent = code.slice(0, 40) + '...';
+        codeEl.dataset.full = code;
+        wrap.style.display = 'block';
+        document.getElementById('genShareBtn').textContent = 'Regenerate Code';
+    }
+    // Also try to share via native share sheet
+    const url = location.href.split('#')[0] + '#share=' + encodeURIComponent(code);
+    if (navigator.share) {
+        navigator.share({ title: 'My Bare Pantry', text: 'Check out my clean eating pantry on Bare!', url: url }).catch(() => {});
+    }
+    showToast('Code generated! Tap Copy to share.');
+}
+
+function copyShareCode() {
+    const codeEl = document.getElementById('shareCodeText');
+    if (!codeEl) return;
+    const full = codeEl.dataset.full || codeEl.textContent;
+    const url = location.href.split('#')[0] + '#share=' + encodeURIComponent(full);
+    navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => {
+        navigator.clipboard.writeText(full).then(() => showToast('Code copied!')).catch(() => showToast('Copy failed'));
+    });
+}
+
+function loadSharedPantry() {
+    const input = document.getElementById('lookupInput');
+    if (!input || !input.value.trim()) { showToast('Paste a share code first'); return; }
+    displaySharedPantry(input.value.trim());
+}
+
+function displaySharedPantry(rawCode) {
+    const el = document.getElementById('sharedPantryResult');
+    if (!el) return;
+    try {
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(rawCode.trim()))));
+        if (!decoded.items || !decoded.items.length) throw new Error('empty');
+        const avg = Math.round(decoded.items.reduce((a,b) => a+(b.score||0), 0) / decoded.items.length);
+        el.innerHTML = '<div class="shared-pantry-view">' +
+            '<div class="shared-pantry-header"><div><div class="shared-pantry-name">' + (decoded.n || 'Anonymous') + '\'s Pantry</div>' +
+            '<div class="shared-pantry-meta">' + decoded.items.length + ' products Â· Avg ' + avg + '</div></div>' +
+            '<div style="font-size:18px;font-weight:800;color:' + getScoreColor(avg) + '">' + avg + '</div></div>' +
+            '<div class="shared-pantry-items">' +
+            decoded.items.map(item =>
+                '<div class="shared-pantry-item">' +
+                '<div style="font-size:24px">' + (item.emoji||'ðŸ›’') + '</div>' +
+                '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">' + item.name + '</div>' +
+                '<div style="font-size:11px;color:var(--text-3)">' + (item.brand||'') + '</div></div>' +
+                '<div style="font-size:13px;font-weight:800;color:' + getScoreColor(item.score||0) + '">' + (item.score||'â€”') + '</div></div>'
+            ).join('') +
+            '</div></div>';
+        switchView('community');
+    } catch(e) {
+        showToast('Invalid code â€” check and try again');
+    }
+}
+
+function renderFeaturedPantries() {
+    const el = document.getElementById('featuredPantries');
+    if (!el) return;
+    el.innerHTML = FEATURED_PANTRIES.map(fp => {
+        const avg = Math.round(fp.items.reduce((a,b) => a+b.score, 0) / fp.items.length);
+        return '<div class="featured-card">' +
+            '<div class="featured-card-header">' +
+            '<div class="featured-avatar">' + fp.avatar + '</div>' +
+            '<div><div class="featured-user">' + fp.name + '</div><div class="featured-time">' + fp.ts + '</div></div>' +
+            '<div class="featured-avg" style="color:' + getScoreColor(avg) + '">' + avg + '</div></div>' +
+            '<div class="featured-items-row">' +
+            fp.items.map(i => '<div class="featured-item-chip"><span>' + i.emoji + '</span>' + i.name.split(' ').slice(0,2).join(' ') + '</div>').join('') +
+            '</div></div>';
+    }).join('');
+}
+
+function checkShareCodeOnLoad() {
+    const hash = decodeURIComponent(location.hash);
+    if (hash.startsWith('#share=')) {
+        const code = hash.slice(7);
+        setTimeout(() => {
+            switchView('community');
+            document.getElementById('lookupInput').value = code;
+            displaySharedPantry(code);
+        }, 1800);
+    }
+}
 </script>
 </body>
 </html>
