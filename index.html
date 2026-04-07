@@ -4570,7 +4570,7 @@ async function openUnknownBarcode(barcode) {
             <div class="breakdown-title">Ingredients <span style="font-size:10px;font-weight:500;color:var(--text-3)"> — tap any to learn more</span></div>
             <div class="ingredients-list">
                 ${ingredientList.map(ing=>`
-                <div class="ingredient-item" onclick="openIngredientInfo('${ing.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', ${ing.harmful})">
+                <div class="ingredient-item" onclick="openIngredientInfo(this.dataset.ing, ${ing.harmful})" data-ing="${ing.name.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}">
                     <div class="ingredient-dot" style="background:${ing.harmful?'#FF3D57':'#00E676'}"></div>
                     <div class="ingredient-name">${ing.name}</div>
                     <div class="ingredient-status" style="color:${ing.harmful?'#FF3D57':'var(--text-3)'}">
@@ -4884,7 +4884,7 @@ function renderSheet(prod) {
         <div class="breakdown-title">Ingredients</div>
         <div class="ingredients-list">
             ${prod.ingredients.map(ing=>`
-            <div class="ingredient-item" onclick="openIngredientInfo('${ing.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', ${ing.harmful})">
+            <div class="ingredient-item" onclick="openIngredientInfo(this.dataset.ing, ${ing.harmful})" data-ing="${ing.name.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}">
                 <div class="ingredient-dot" style="background:${ing.harmful?'#FF3D57':'#00E676'}"></div>
                 <div class="ingredient-name">${ing.name}</div>
                 <div class="ingredient-status" style="color:${ing.harmful?'#FF3D57':'var(--text-3)'}">
