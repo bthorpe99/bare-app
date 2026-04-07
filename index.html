@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -488,7 +488,163 @@
             background: var(--accent-dim); padding: 2px 7px;
             border-radius: 50px; border: 1px solid rgba(124,58,237,0.25);
         }
-    </style>
+    
+        /* ═══════════════════════════════════════════
+           FEATURE: OVERLAYS (shared)
+        ═══════════════════════════════════════════ */
+        .overlay-panel { position:absolute;inset:0;z-index:200;pointer-events:none;opacity:0;transition:opacity 0.2s; }
+        .overlay-panel.open { pointer-events:all;opacity:1; }
+        .overlay-backdrop { position:absolute;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px); }
+        .overlay-sheet {
+            position:absolute;bottom:0;left:0;right:0;
+            background:var(--surface);border-radius:24px 24px 0 0;
+            padding:20px 20px 44px;
+            transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+            max-height:82vh;overflow-y:auto;
+        }
+        .overlay-panel.open .overlay-sheet { transform:translateY(0); }
+        .overlay-handle { width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px; }
+        .overlay-title { font-size:18px;font-weight:800;color:var(--text);margin-bottom:18px; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: SETTINGS OVERLAY
+        ═══════════════════════════════════════════ */
+        .settings-section { margin-bottom:22px; }
+        .settings-label { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);margin-bottom:10px; }
+        .settings-row { display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border); }
+        .settings-row:last-child { border-bottom:none; }
+        .settings-row-label { font-size:15px;font-weight:600;color:var(--text); }
+        .settings-row-sub { font-size:12px;color:var(--text-3);margin-top:2px; }
+        .toggle-switch { width:48px;height:28px;border-radius:14px;background:var(--surface2);border:1px solid var(--border);position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0; }
+        .toggle-switch.on { background:var(--accent);border-color:var(--accent); }
+        .toggle-knob { position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+        .toggle-switch.on .toggle-knob { transform:translateX(20px); }
+        .allergen-grid { display:flex;flex-wrap:wrap;gap:8px; }
+        .allergen-chip { padding:8px 14px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--text-2);transition:all 0.15s;-webkit-tap-highlight-color:transparent; }
+        .allergen-chip.active { background:#FF3D57;border-color:#FF3D57;color:#fff; }
+        .gear-btn { width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent; }
+        .gear-btn svg { width:16px;height:16px;color:var(--text-2); }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: STREAK & BADGES
+        ═══════════════════════════════════════════ */
+        .streak-pill { display:flex;align-items:center;gap:5px;background:rgba(255,179,0,0.12);border:1px solid rgba(255,179,0,0.25);border-radius:50px;padding:5px 10px;font-size:12px;font-weight:700;color:#FFB300;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent; }
+        .badge-toast { position:absolute;top:60px;left:20px;right:20px;background:var(--surface);border:1px solid rgba(255,179,0,0.4);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);transform:translateY(-80px);opacity:0;transition:all 0.3s cubic-bezier(0.32,0.72,0,1); }
+        .badge-toast.show { transform:translateY(0);opacity:1; }
+        .badge-toast .bt-emoji { font-size:30px; }
+        .badge-toast strong { font-size:13px;color:var(--text);display:block; }
+        .badge-toast span.bt-desc { font-size:12px;color:var(--text-2); }
+        .badges-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+        .badge-item { background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center; }
+        .badge-item.earned { border-color:rgba(255,179,0,0.45);background:rgba(255,179,0,0.07); }
+        .badge-item.locked { opacity:0.38; }
+        .badge-emoji { font-size:26px;margin-bottom:5px; }
+        .badge-name { font-size:11px;font-weight:700;color:var(--text); }
+        .badge-desc { font-size:10px;color:var(--text-3);margin-top:2px;line-height:1.3; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: DIET FILTERS
+        ═══════════════════════════════════════════ */
+        .diet-row { display:flex;gap:6px;overflow-x:auto;padding:10px 20px 4px;background:var(--bg); }
+        .diet-pill { flex-shrink:0;padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface2);color:var(--text-2);transition:all 0.2s;-webkit-tap-highlight-color:transparent; }
+        .diet-pill.active { background:var(--accent);border-color:var(--accent);color:#0D1728; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: ALLERGEN WARNING BANNER
+        ═══════════════════════════════════════════ */
+        .allergen-banner { background:rgba(255,61,87,0.1);border:1px solid rgba(255,61,87,0.3);border-radius:10px;padding:10px 14px;margin:0 0 12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#FF3D57; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: COMPARE MODE
+        ═══════════════════════════════════════════ */
+        .compare-slots { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px; }
+        .compare-slot { background:var(--surface2);border:2px dashed var(--border);border-radius:16px;padding:16px;text-align:center;cursor:pointer;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px; }
+        .compare-slot.filled { border-style:solid;border-color:var(--accent); }
+        .compare-slot-emoji { font-size:30px; }
+        .compare-slot-name { font-size:12px;font-weight:600;color:var(--text);line-height:1.3; }
+        .compare-slot-score { font-size:22px;font-weight:800; }
+        .compare-slot-empty { font-size:13px;color:var(--text-3); }
+        .compare-vs { text-align:center;font-size:12px;font-weight:700;color:var(--text-3);letter-spacing:2px;margin-bottom:14px; }
+        .compare-winner-banner { background:rgba(137,207,240,0.1);border:1px solid rgba(137,207,240,0.3);border-radius:12px;padding:12px 16px;text-align:center;font-size:14px;font-weight:700;color:var(--accent);margin-bottom:14px; }
+        .compare-open-btn { width:100%;padding:13px;border-radius:12px;background:rgba(137,207,240,0.08);border:1.5px solid rgba(137,207,240,0.25);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;-webkit-tap-highlight-color:transparent;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: MEAL SCANNER
+        ═══════════════════════════════════════════ */
+        .meal-tray { position:absolute;bottom:var(--nav-height);left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;z-index:50;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1); }
+        .meal-tray.open { transform:translateY(0); }
+        .meal-tray-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:10px; }
+        .meal-tray-title { font-size:14px;font-weight:700;color:var(--text); }
+        .meal-score-badge { padding:4px 12px;border-radius:50px;font-size:13px;font-weight:800;background:var(--accent);color:#0D1728; }
+        .meal-items { display:flex;gap:8px;overflow-x:auto; }
+        .meal-item-chip { flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px; }
+        .meal-item-remove { color:var(--text-3);cursor:pointer;font-size:15px;line-height:1; }
+        .meal-clear-btn { font-size:12px;color:#FF3D57;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
+        .add-meal-btn { width:100%;padding:13px;border-radius:12px;background:rgba(137,207,240,0.08);border:1.5px solid rgba(137,207,240,0.25);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;-webkit-tap-highlight-color:transparent;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: GROCERY LIST (in Pantry tab)
+        ═══════════════════════════════════════════ */
+        .pantry-tabs { display:flex;gap:8px;padding:14px 20px 0; }
+        .pantry-tab-pill { flex:1;padding:9px;border-radius:10px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-2);transition:all 0.2s;-webkit-tap-highlight-color:transparent; }
+        .pantry-tab-pill.active { background:var(--accent);border-color:var(--accent);color:#0D1728; }
+        .pantry-section { display:none;padding:14px 20px; }
+        .pantry-section.active { display:block; }
+        .grocery-item { display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px; }
+        .grocery-check { width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s; }
+        .grocery-check.checked { background:var(--accent);border-color:var(--accent); }
+        .grocery-check.checked::after { content:'checkmark';font-size:0;background:no-repeat center; }
+        .grocery-item-name { flex:1;font-size:14px;font-weight:600;color:var(--text); }
+        .grocery-item-name.done { text-decoration:line-through;color:var(--text-3); }
+        .grocery-item-score { font-size:13px;font-weight:700; }
+        .grocery-item-del { color:var(--text-3);font-size:18px;cursor:pointer;padding:2px 4px; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: WEEKLY REPORT
+        ═══════════════════════════════════════════ */
+        .weekly-report { margin:14px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:16px;overflow:hidden; }
+        .weekly-report-header { background:linear-gradient(135deg,rgba(137,207,240,0.12),rgba(179,157,219,0.12));padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+        .weekly-report-title { font-size:15px;font-weight:800;color:var(--text); }
+        .weekly-report-date { font-size:11px;color:var(--text-3);font-weight:600; }
+        .weekly-stats { display:grid;grid-template-columns:repeat(3,1fr); }
+        .weekly-stat { padding:12px;text-align:center;border-right:1px solid var(--border); }
+        .weekly-stat:last-child { border-right:none; }
+        .weekly-stat-val { font-size:20px;font-weight:800;color:var(--accent); }
+        .weekly-stat-label { font-size:10px;color:var(--text-3);font-weight:600;margin-top:2px; }
+        .weekly-insight { padding:12px 16px;font-size:13px;color:var(--text-2);line-height:1.6;border-top:1px solid var(--border); }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: SHARE SCORE
+        ═══════════════════════════════════════════ */
+        .share-btn { display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;width:100%;background:rgba(179,157,219,0.1);border:1.5px solid rgba(179,157,219,0.3);color:var(--accent2);font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;-webkit-tap-highlight-color:transparent;margin-top:8px; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: KID MODE
+        ═══════════════════════════════════════════ */
+        .kid-score-wrap { display:none;text-align:center;padding:10px 20px 0; }
+        .kid-score-emoji { font-size:64px; }
+        .kid-label-badge { font-size:22px;font-weight:900;border-radius:14px;padding:10px 28px;display:inline-block;margin-top:8px; }
+        .kid-label-badge.clean { background:rgba(0,230,118,0.15);color:#00E676; }
+        .kid-label-badge.ok { background:rgba(255,179,0,0.15);color:#FFB300; }
+        .kid-label-badge.avoid { background:rgba(255,61,87,0.15);color:#FF3D57; }
+        body.kid-mode .kid-score-wrap { display:block; }
+        body.kid-mode .score-ring-container { display:none; }
+
+        /* ═══════════════════════════════════════════
+           FEATURE: STORE AVAILABILITY
+        ═══════════════════════════════════════════ */
+        .store-avail-wrap { padding:0 20px 16px; }
+        .store-avail-title { font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-3);margin-bottom:8px; }
+        .store-avail-list { display:flex;flex-wrap:wrap;gap:6px; }
+        .store-avail-chip { padding:6px 12px;border-radius:50px;font-size:12px;font-weight:600;color:var(--text-2);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;gap:5px; }
+        .store-dot { width:6px;height:6px;border-radius:50%;background:#00E676;flex-shrink:0; }
+
+        /* ═══════════════════════════════════════════
+           MASCOT ROW (gear + streak)
+        ═══════════════════════════════════════════ */
+        .mascot-actions { display:flex;align-items:center;gap:8px;margin-left:auto; }
+
+        </style>
 </head>
 <body>
 <div id="app">
@@ -513,6 +669,10 @@
                     <div class="home-greeting">Know exactly what you're eating</div>
                     <div class="home-title">Real <span>Ingredients.</span> Real Score.</div>
                 </div>
+                <div class="mascot-actions">
+                    <div class="streak-pill" id="streakPill" style="display:none" onclick="openSettings()">🔥 0</div>
+                    <div class="gear-btn" onclick="openSettings()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                </div>
             </div>
             <div class="stats-row">
                 <div class="stat-card">
@@ -532,6 +692,14 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <input type="text" class="search-input" placeholder="Search products or brands…" id="homeSearch" oninput="filterProducts(this.value)">
             </div>
+        </div>
+        <div class="diet-row">
+            <div class="diet-pill active" onclick="setDiet('All',this)">All</div>
+            <div class="diet-pill" onclick="setDiet('Keto',this)">🥩 Keto</div>
+            <div class="diet-pill" onclick="setDiet('Paleo',this)">🌿 Paleo</div>
+            <div class="diet-pill" onclick="setDiet('Vegan',this)">🥦 Vegan</div>
+            <div class="diet-pill" onclick="setDiet('Gluten-Free',this)">🚫🌾 GF</div>
+            <div class="diet-pill" onclick="setDiet('Carnivore',this)">🥩 Carnivore</div>
         </div>
         <div class="categories" id="categories">
             <div class="pill active" onclick="filterCategory('All',this)">All</div>
@@ -631,7 +799,16 @@
             </div>
             <div class="list-view-subtitle" id="pantrySubtitle">Your saved products</div>
         </div>
-        <div class="product-list" id="pantryList"></div>
+        <div class="pantry-tabs">
+            <div class="pantry-tab-pill active" data-tab="saved" onclick="switchPantryTab('saved')">💾 Saved</div>
+            <div class="pantry-tab-pill" data-tab="grocery" onclick="switchPantryTab('grocery')">🛒 Shopping List</div>
+        </div>
+        <div class="pantry-section active" id="savedSection">
+            <div class="product-list" id="pantryList"></div>
+        </div>
+        <div class="pantry-section" id="grocerySection">
+            <div id="groceryListContent"></div>
+        </div>
         <div class="scroll-pad"></div>
     </div>
 
@@ -641,6 +818,7 @@
             <div class="list-view-title">Scan History</div>
             <div class="list-view-subtitle">Previously scanned products</div>
         </div>
+        <div id="weeklyReport"></div>
         <div class="product-list" id="historyList"></div>
         <div class="scroll-pad"></div>
     </div>
@@ -3923,6 +4101,7 @@ function applyFilters() {
     if (state.activeStore) f = f.filter(p => p.brand.toLowerCase().includes(state.activeStore.toLowerCase()));
     else if (state.activeCategory !== 'All') f = f.filter(p => p.category === state.activeCategory);
     if (state.searchQuery) f = f.filter(p => p.name.toLowerCase().includes(state.searchQuery) || p.brand.toLowerCase().includes(state.searchQuery));
+    f = f.filter(p => productMatchesDiet(p));
     if (state.sortOrder === 'best')  f.sort((a,b) => b.score - a.score);
     if (state.sortOrder === 'worst') f.sort((a,b) => a.score - b.score);
     if (state.sortOrder === 'az')    f.sort((a,b) => a.name.localeCompare(b.name));
@@ -4059,6 +4238,7 @@ async function zxingScanLoop() {
 }
 
 function handleBarcodeDetected(barcode) {
+    recordScan();
     const banner = document.getElementById('barcodeBanner');
     const flash = document.getElementById('scanFlash');
 
@@ -4551,6 +4731,7 @@ function closeStoreCard() {
 function openProduct(id, addToHistory = false) {
     const prod = PRODUCTS.find(x => x.id === id);
     if (!prod) return;
+    if (selectForCompare(prod)) return;
     state.currentProduct = prod;
     if (addToHistory) {
         state.history = [id, ...state.history.filter(h => h !== id)].slice(0, 50);
@@ -4573,7 +4754,13 @@ function renderSheet(prod) {
     const dashOffset = circ - (prod.score / 100) * circ;
     const { seedOils, processing, toxins } = prod.breakdown;
 
+    const allergenHits = checkAllergens(prod);
+    const allergenBanner = allergenHits.length ? `<div class="allergen-banner"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>⚠️ Contains: ${allergenHits.join(', ')}</div>` : '';
+    const [kidLbl, kidCls] = kidLabel(prod.score);
+    const kidBlock = `<div class="kid-score-wrap"><div class="kid-score-emoji">${kidEmoji(prod.score)}</div><div class="kid-label-badge ${kidCls}">${kidLbl}</div></div>`;
     document.getElementById('sheetContent').innerHTML = `
+        ${allergenBanner}
+        ${kidBlock}
         <div class="score-ring-container">
             <div class="score-ring">
                 <svg viewBox="0 0 88 88"><circle class="score-ring-bg" cx="44" cy="44" r="${r}"/>
@@ -4646,10 +4833,15 @@ function renderSheet(prod) {
                 <svg class="alt-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
             </div>`).join('')}
         </div>` : ''}
+        ${renderStoreAvailability(prod)}
         <button class="add-pantry-btn ${saved?'saved':'not-saved'}" id="sheetPantryBtn" onclick="togglePantry('${prod.id}',true)">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${saved?'currentColor':'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             ${saved ? 'Saved to Pantry' : 'Add to Pantry'}
-        </button>`;
+        </button>
+        <button class="add-meal-btn visible" onclick="addToMeal(PRODUCTS.find(x=>x.id==='${prod.id}'))">🍽️ Add to Meal</button>
+        <button class="compare-open-btn" onclick="state.compareSlots[0]=PRODUCTS.find(x=>x.id==='${prod.id}');openCompare()">⚖️ Compare</button>
+        <button class="add-meal-btn visible" style="background:rgba(0,230,118,0.08);border-color:rgba(0,230,118,0.25);color:#00E676;margin-top:8px;" onclick="addToGrocery(PRODUCTS.find(x=>x.id==='${prod.id}'))">🛒 Add to List</button>
+        <button class="share-btn" onclick="shareScore(PRODUCTS.find(x=>x.id==='${prod.id}'))"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share Score</button>`;
 
     setTimeout(() => {
         const fill = document.getElementById('scoreRingFill');
@@ -4691,23 +4883,22 @@ function renderPantry() {
     if (!saved.length) {
         badge.style.display = 'none';
         list.innerHTML = `<div class="empty-state"><div class="empty-emoji">🛒</div><div class="empty-title">Your pantry is empty</div><div class="empty-text">Tap the bookmark icon on any product to save it here.</div></div>`;
-        return;
+    } else {
+        const avg = Math.round(saved.reduce((a,b) => a + b.score, 0) / saved.length);
+        const col = getScoreColor(avg);
+        badge.style.display = 'block';
+        badge.style.background = col + '22';
+        badge.style.color = col;
+        badge.textContent = 'Avg ' + avg;
+        const sorted = [...saved].sort((a,b) => b.score - a.score);
+        list.innerHTML = sorted.map(p => `
+            <div class="product-list-item" onclick="openProduct('${p.id}')">
+                <div class="list-emoji">${p.emoji}</div>
+                <div class="list-info"><div class="list-brand">${p.brand}</div><div class="list-name">${p.name}</div></div>
+                <div class="list-score" style="color:${getScoreColor(p.score)}">${p.score}</div>
+            </div>`).join('');
     }
-    // Pantry avg score badge
-    const avg = Math.round(saved.reduce((a,b) => a + b.score, 0) / saved.length);
-    const col = getScoreColor(avg);
-    badge.style.display = 'block';
-    badge.style.background = col + '22';
-    badge.style.color = col;
-    badge.textContent = 'Avg ' + avg;
-    // Sort pantry best first
-    const sorted = [...saved].sort((a,b) => b.score - a.score);
-    list.innerHTML = sorted.map(p => `
-        <div class="product-list-item" onclick="openProduct('${p.id}')">
-            <div class="list-emoji">${p.emoji}</div>
-            <div class="list-info"><div class="list-brand">${p.brand}</div><div class="list-name">${p.name}</div></div>
-            <div class="list-score" style="color:${getScoreColor(p.score)}">${p.score}</div>
-        </div>`).join('');
+    renderGroceryList();
 }
 
 // ═══════════════════════════════════════════
@@ -4716,6 +4907,7 @@ function renderPantry() {
 function renderHistory() {
     const list = document.getElementById('historyList');
     const scanned = state.history.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+    renderWeeklyReport();
     if (!scanned.length) {
         list.innerHTML = `<div class="empty-state"><div class="empty-emoji">🔍</div><div class="empty-title">No scans yet</div><div class="empty-text">Go to the Scanner tab and scan a real barcode or tap a demo product.</div></div>`;
         return;
@@ -4769,6 +4961,7 @@ renderProducts(PRODUCTS);
 renderScanChips();
 renderRecent();
 updateStats();
+initFeatures();
 
 // Splash dismiss
 setTimeout(() => {
@@ -4786,6 +4979,508 @@ if ('serviceWorker' in navigator) {
 document.getElementById('map-container')?.addEventListener('click', e => {
     if (!e.target.closest('.store-pin')) closeStoreCard();
 });
+
+// ═══════════════════════════════════════════
+// FEATURE STATE ADDITIONS
+// ═══════════════════════════════════════════
+state.activeDiet    = 'All';
+state.mealProducts  = [];
+state.compareSlots  = [null, null];
+state.pickingSlot   = 0;
+state.comparePicking = false;
+state.streak        = 0;
+state.lastScanDate  = null;
+state.earnedBadges  = [];
+state.totalScanned  = 0;
+
+// ═══════════════════════════════════════════
+// FEATURE 7: STREAK & BADGES
+// ═══════════════════════════════════════════
+const ALL_BADGES = [
+    { id:'first_scan',  emoji:'🔍', name:'First Scan',     desc:'Scanned your first product',   condition: s => s.totalScanned >= 1 },
+    { id:'scan_10',     emoji:'📱', name:'Scanner',         desc:'Scanned 10 products',           condition: s => s.totalScanned >= 10 },
+    { id:'scan_50',     emoji:'🏆', name:'Label Expert',    desc:'Scanned 50 products',           condition: s => s.totalScanned >= 50 },
+    { id:'scan_100',    emoji:'🧠', name:'Guru',            desc:'Scanned 100 products',          condition: s => s.totalScanned >= 100 },
+    { id:'streak_3',    emoji:'⚡', name:'3 Day Streak',    desc:'3 days in a row',               condition: s => s.streak >= 3 },
+    { id:'streak_7',    emoji:'🔥', name:'7 Day Streak',    desc:'7 days in a row',               condition: s => s.streak >= 7 },
+    { id:'streak_30',   emoji:'💎', name:'30 Day Streak',   desc:'30 days in a row',              condition: s => s.streak >= 30 },
+    { id:'pantry_5',    emoji:'🥗', name:'Clean Eater',     desc:'Saved 5 products to pantry',   condition: () => (JSON.parse(localStorage.getItem('bare_pantry')||'[]')).length >= 5 },
+];
+
+function loadStreakData() {
+    const d = JSON.parse(localStorage.getItem('bare_streak') || '{}');
+    state.streak       = d.streak       || 0;
+    state.lastScanDate = d.lastScanDate || null;
+    state.earnedBadges = d.badges       || [];
+    state.totalScanned = d.totalScanned || 0;
+    updateStreakUI();
+}
+
+function recordScan() {
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (state.lastScanDate === today) {
+        // already counted today
+    } else if (state.lastScanDate === yesterday) {
+        state.streak++;
+    } else {
+        state.streak = 1;
+    }
+    state.lastScanDate = today;
+    state.totalScanned = (state.totalScanned || 0) + 1;
+    checkNewBadges();
+    localStorage.setItem('bare_streak', JSON.stringify({ streak: state.streak, lastScanDate: state.lastScanDate, badges: state.earnedBadges, totalScanned: state.totalScanned }));
+    updateStreakUI();
+}
+
+function checkNewBadges() {
+    ALL_BADGES.forEach(b => {
+        if (!state.earnedBadges.includes(b.id) && b.condition(state)) {
+            state.earnedBadges.push(b.id);
+            showBadgeToast(b);
+        }
+    });
+}
+
+function showBadgeToast(badge) {
+    const t = document.createElement('div');
+    t.className = 'badge-toast';
+    t.innerHTML = '<span class="bt-emoji">' + badge.emoji + '</span><div><strong>' + badge.name + ' Unlocked!</strong><span class="bt-desc">' + badge.desc + '</span></div>';
+    document.getElementById('app').appendChild(t);
+    setTimeout(() => t.classList.add('show'), 50);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 350); }, 3200);
+}
+
+function updateStreakUI() {
+    const el = document.getElementById('streakPill');
+    if (!el) return;
+    if (state.streak > 0) {
+        el.textContent = '🔥 ' + state.streak + ' day' + (state.streak !== 1 ? 's' : '');
+        el.style.display = 'flex';
+    } else {
+        el.style.display = 'none';
+    }
+}
+
+function renderBadgesGrid() {
+    const grid = document.getElementById('badgesGrid');
+    if (!grid) return;
+    grid.innerHTML = ALL_BADGES.map(b => {
+        const earned = state.earnedBadges.includes(b.id);
+        return '<div class="badge-item ' + (earned ? 'earned' : 'locked') + '"><div class="badge-emoji">' + b.emoji + '</div><div class="badge-name">' + b.name + '</div><div class="badge-desc">' + b.desc + '</div></div>';
+    }).join('');
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 4: DIET FILTERS
+// ═══════════════════════════════════════════
+const DIET_EXCLUDES = {
+    'Keto':        ['sugar','wheat','corn syrup','oats','rice','potato','bread','flour','honey'],
+    'Paleo':       ['dairy','milk','grain','legume','peanut','soy','corn','canola'],
+    'Vegan':       ['milk','cheese','butter','egg','meat','chicken','beef','pork','fish','whey','gelatin','honey','casein','tuna','salmon'],
+    'Gluten-Free': ['wheat','barley','rye','malt'],
+    'Carnivore':   ['sugar','wheat','corn','soy','vegetable oil','grain','legume','bean'],
+};
+
+function setDiet(diet, el) {
+    state.activeDiet = diet;
+    document.querySelectorAll('.diet-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    applyFilters();
+}
+
+function productMatchesDiet(product) {
+    if (!state.activeDiet || state.activeDiet === 'All') return true;
+    const rules = DIET_EXCLUDES[state.activeDiet];
+    if (!rules) return true;
+    const ing = (product.ingredients || []).map(i => i.name.toLowerCase()).join(' ');
+    return !rules.some(e => ing.includes(e));
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 8: ALLERGEN ALERT
+// ═══════════════════════════════════════════
+const ALLERGEN_KW = {
+    'Nuts':     ['peanut','almond','cashew','walnut','pecan','pistachio','hazelnut'],
+    'Dairy':    ['milk','cheese','butter','cream','whey','casein','lactose'],
+    'Gluten':   ['wheat','barley','rye','malt','gluten'],
+    'Soy':      ['soy','soya','tofu','edamame'],
+    'Eggs':     ['egg ','albumin'],
+    'Shellfish':['shrimp','crab','lobster','shellfish','prawn'],
+    'Fish':     [' fish','salmon','tuna','cod','tilapia','anchovy'],
+};
+
+function getActiveAllergens() {
+    return JSON.parse(localStorage.getItem('bare_allergens') || '[]');
+}
+
+function toggleAllergen(el) {
+    const allergen = el.dataset.allergen;
+    let active = getActiveAllergens();
+    if (active.includes(allergen)) {
+        active = active.filter(a => a !== allergen);
+        el.classList.remove('active');
+    } else {
+        active.push(allergen);
+        el.classList.add('active');
+    }
+    localStorage.setItem('bare_allergens', JSON.stringify(active));
+}
+
+function checkAllergens(product) {
+    const active = getActiveAllergens();
+    if (!active.length) return [];
+    const ing = ' ' + (product.ingredients || []).map(i => i.name.toLowerCase()).join(' ') + ' ';
+    return active.filter(allergen => {
+        const kws = ALLERGEN_KW[allergen] || [];
+        return kws.some(k => ing.includes(k));
+    });
+}
+
+function initAllergenUI() {
+    const active = getActiveAllergens();
+    document.querySelectorAll('.allergen-chip').forEach(chip => {
+        chip.classList.toggle('active', active.includes(chip.dataset.allergen));
+    });
+}
+
+// ═══════════════════════════════════════════
+// FEATURE: SETTINGS OVERLAY
+// ═══════════════════════════════════════════
+function openSettings() {
+    document.getElementById('settingsOverlay').classList.add('open');
+    initAllergenUI();
+    renderBadgesGrid();
+}
+function closeSettings() {
+    document.getElementById('settingsOverlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 6: KID MODE
+// ═══════════════════════════════════════════
+function toggleKidMode() {
+    const toggle = document.getElementById('kidModeToggle');
+    const isOn = toggle.classList.toggle('on');
+    document.body.classList.toggle('kid-mode', isOn);
+    localStorage.setItem('bare_kidmode', isOn ? '1' : '0');
+}
+function initKidMode() {
+    if (localStorage.getItem('bare_kidmode') === '1') {
+        document.body.classList.add('kid-mode');
+        const t = document.getElementById('kidModeToggle');
+        if (t) t.classList.add('on');
+    }
+}
+function kidEmoji(score) {
+    if (score >= 70) return '😊';
+    if (score >= 40) return '😐';
+    return '😟';
+}
+function kidLabel(score) {
+    if (score >= 70) return ['CLEAN', 'clean'];
+    if (score >= 40) return ['OK', 'ok'];
+    return ['AVOID', 'avoid'];
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 3: COMPARE MODE
+// ═══════════════════════════════════════════
+function openCompare() {
+    document.getElementById('compareOverlay').classList.add('open');
+    renderCompare();
+}
+function closeCompare() {
+    document.getElementById('compareOverlay').classList.remove('open');
+}
+function pickCompareSlot(slot) {
+    state.pickingSlot = slot;
+    state.comparePicking = true;
+    closeCompare();
+    switchView('home');
+    let banner = document.getElementById('comparePickBanner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'comparePickBanner';
+        banner.style.cssText = 'position:absolute;top:0;left:0;right:0;background:rgba(137,207,240,0.15);border-bottom:1px solid rgba(137,207,240,0.3);padding:12px 20px;font-size:13px;font-weight:700;color:var(--accent);z-index:100;text-align:center;';
+        document.getElementById('view-home').prepend(banner);
+    }
+    banner.textContent = 'Tap a product to add to slot ' + slot;
+}
+function selectForCompare(product) {
+    if (!state.comparePicking) return false;
+    state.compareSlots[state.pickingSlot - 1] = product;
+    state.comparePicking = false;
+    const banner = document.getElementById('comparePickBanner');
+    if (banner) banner.remove();
+    openCompare();
+    return true;
+}
+function renderCompare() {
+    const [p1, p2] = state.compareSlots;
+    const slot1 = document.getElementById('compareSlot1');
+    const slot2 = document.getElementById('compareSlot2');
+    if (slot1) {
+        if (p1) {
+            slot1.className = 'compare-slot filled';
+            slot1.innerHTML = '<div class="compare-slot-emoji">' + p1.emoji + '</div><div class="compare-slot-name">' + p1.name + '</div><div class="compare-slot-score" style="color:' + getScoreColor(p1.score) + '">' + p1.score + '</div>';
+        } else {
+            slot1.className = 'compare-slot';
+            slot1.innerHTML = '<div class="compare-slot-empty">+ Add Product</div>';
+        }
+    }
+    if (slot2) {
+        if (p2) {
+            slot2.className = 'compare-slot filled';
+            slot2.innerHTML = '<div class="compare-slot-emoji">' + p2.emoji + '</div><div class="compare-slot-name">' + p2.name + '</div><div class="compare-slot-score" style="color:' + getScoreColor(p2.score) + '">' + p2.score + '</div>';
+        } else {
+            slot2.className = 'compare-slot';
+            slot2.innerHTML = '<div class="compare-slot-empty">+ Add Product</div>';
+        }
+    }
+    const results = document.getElementById('compareResults');
+    if (!results) return;
+    if (!p1 || !p2) { results.innerHTML = ''; return; }
+    const winner = p1.score >= p2.score ? p1 : p2;
+    const c1s = getScoreColor(p1.score), c2s = getScoreColor(p2.score);
+    results.innerHTML = '<div class="compare-winner-banner">🏆 ' + winner.name.split(' ').slice(0,3).join(' ') + ' is cleaner</div>' +
+        compareBar('Score', p1.score, p2.score, 100, c1s, c2s) +
+        compareBar('Ingredients', p1.ingredients ? p1.ingredients.length : 0, p2.ingredients ? p2.ingredients.length : 0, 30, p1.ingredients && p1.ingredients.length <= (p2.ingredients ? p2.ingredients.length : 0) ? '#00E676' : '#FF3D57', p2.ingredients && p2.ingredients.length <= (p1.ingredients ? p1.ingredients.length : 0) ? '#00E676' : '#FF3D57');
+}
+function compareBar(label, v1, v2, max, c1, c2) {
+    const w1 = Math.min(100, (v1/max)*100).toFixed(0);
+    const w2 = Math.min(100, (v2/max)*100).toFixed(0);
+    return '<div style="margin-bottom:14px;"><div style="font-size:11px;color:var(--text-3);font-weight:700;text-align:center;margin-bottom:6px;">' + label + '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<div style="font-size:14px;font-weight:800;color:' + c1 + ';width:30px;text-align:right;">' + v1 + '</div>' +
+        '<div style="flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + w1 + '%;background:' + c1 + ';border-radius:4px;"></div></div>' +
+        '<div style="flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;direction:rtl;"><div style="height:100%;width:' + w2 + '%;background:' + c2 + ';border-radius:4px;"></div></div>' +
+        '<div style="font-size:14px;font-weight:800;color:' + c2 + ';width:30px;">' + v2 + '</div>' +
+        '</div></div>';
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 1: MEAL SCANNER
+// ═══════════════════════════════════════════
+function addToMeal(product) {
+    state.mealProducts.push(product);
+    renderMealTray();
+    document.getElementById('mealTray').classList.add('open');
+    showToast('Added to meal!');
+}
+function removeFromMeal(idx) {
+    state.mealProducts.splice(idx, 1);
+    renderMealTray();
+    if (state.mealProducts.length === 0) document.getElementById('mealTray').classList.remove('open');
+}
+function clearMeal() {
+    state.mealProducts = [];
+    document.getElementById('mealTray').classList.remove('open');
+}
+function renderMealTray() {
+    const items = document.getElementById('mealItems');
+    if (!items) return;
+    items.innerHTML = state.mealProducts.map((p, i) =>
+        '<div class="meal-item-chip">' + p.emoji + ' ' + p.name.split(' ').slice(0,2).join(' ') +
+        ' <span class="meal-item-remove" onclick="removeFromMeal(' + i + ')">×</span></div>'
+    ).join('');
+    if (state.mealProducts.length > 0) {
+        const avg = Math.round(state.mealProducts.reduce((s,p) => s + p.score, 0) / state.mealProducts.length);
+        const badge = document.getElementById('mealScoreBadge');
+        if (badge) { badge.textContent = avg; badge.style.background = getScoreColor(avg); }
+    }
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 5: GROCERY LIST
+// ═══════════════════════════════════════════
+function getGroceryList() { return JSON.parse(localStorage.getItem('bare_grocery') || '[]'); }
+function saveGroceryList(list) { localStorage.setItem('bare_grocery', JSON.stringify(list)); }
+
+function addToGrocery(product) {
+    const list = getGroceryList();
+    if (!list.find(i => i.id === product.id)) {
+        list.push({ id: product.id, name: product.name, emoji: product.emoji, score: product.score, checked: false });
+        saveGroceryList(list);
+        showToast('Added to grocery list!');
+    } else {
+        showToast('Already on your list');
+    }
+    renderGroceryList();
+}
+function toggleGroceryCheck(id) {
+    const list = getGroceryList();
+    const item = list.find(i => i.id === id);
+    if (item) { item.checked = !item.checked; saveGroceryList(list); renderGroceryList(); }
+}
+function removeFromGrocery(id) {
+    saveGroceryList(getGroceryList().filter(i => i.id !== id));
+    renderGroceryList();
+}
+function renderGroceryList() {
+    const el = document.getElementById('groceryListContent');
+    if (!el) return;
+    const list = getGroceryList();
+    if (!list.length) {
+        el.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:48px;margin-bottom:12px;">🛒</div><div style="font-size:15px;font-weight:600;color:var(--text-2);">List is empty</div><div style="font-size:13px;color:var(--text-3);margin-top:6px;">Tap Add to List on any product</div></div>';
+        return;
+    }
+    el.innerHTML = list.map(item =>
+        '<div class="grocery-item">' +
+        '<div class="grocery-check ' + (item.checked ? 'checked' : '') + '" onclick="toggleGroceryCheck(\'' + item.id + '\')"><span style="font-size:14px;color:#0D1728;font-weight:900;">' + (item.checked ? '✓' : '') + '</span></div>' +
+        '<div style="font-size:22px;">' + item.emoji + '</div>' +
+        '<div class="grocery-item-name ' + (item.checked ? 'done' : '') + '">' + item.name + '</div>' +
+        '<div class="grocery-item-score" style="color:' + getScoreColor(item.score) + '">' + item.score + '</div>' +
+        '<div class="grocery-item-del" onclick="removeFromGrocery(\'' + item.id + '\')">×</div>' +
+        '</div>'
+    ).join('');
+}
+function switchPantryTab(tab) {
+    document.querySelectorAll('.pantry-tab-pill').forEach(p => p.classList.toggle('active', p.dataset.tab === tab));
+    document.getElementById('savedSection').classList.toggle('active', tab === 'saved');
+    document.getElementById('grocerySection').classList.toggle('active', tab === 'grocery');
+    if (tab === 'grocery') renderGroceryList();
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 2: WEEKLY HEALTH REPORT
+// ═══════════════════════════════════════════
+function renderWeeklyReport() {
+    const el = document.getElementById('weeklyReport');
+    if (!el) return;
+    const history = JSON.parse(localStorage.getItem('bare_history') || '[]');
+    const cutoff = Date.now() - 7 * 86400000;
+    const week = history.filter(h => (h.ts || 0) > cutoff);
+    if (!week.length) {
+        el.innerHTML = '<div class="weekly-report"><div class="weekly-report-header"><div class="weekly-report-title">📊 Weekly Report</div><div class="weekly-report-date">Last 7 days</div></div><div class="weekly-insight">Scan products to see your weekly health report here!</div></div>';
+        return;
+    }
+    const scores = week.map(h => h.score).filter(Boolean);
+    const avg = scores.length ? Math.round(scores.reduce((a,b) => a+b,0) / scores.length) : 0;
+    const best  = week.reduce((b,h) => (h.score||0) > (b.score||0) ? h : b, week[0]);
+    const worst = week.reduce((b,h) => (h.score||0) < (b.score||0) ? h : b, week[0]);
+    const insight = avg >= 70 ? '🌿 Great week! Your choices were mostly clean.' : avg >= 50 ? '👍 Decent week. Watch out for processed ingredients.' : '⚡ Try choosing more whole foods next week.';
+    el.innerHTML = '<div class="weekly-report"><div class="weekly-report-header"><div class="weekly-report-title">📊 Weekly Report</div><div class="weekly-report-date">Last 7 days</div></div>' +
+        '<div class="weekly-stats">' +
+        '<div class="weekly-stat"><div class="weekly-stat-val">' + week.length + '</div><div class="weekly-stat-label">Scanned</div></div>' +
+        '<div class="weekly-stat"><div class="weekly-stat-val" style="color:' + getScoreColor(avg) + '">' + avg + '</div><div class="weekly-stat-label">Avg Score</div></div>' +
+        '<div class="weekly-stat"><div class="weekly-stat-val">' + (state.streak||0) + ' 🔥</div><div class="weekly-stat-label">Streak</div></div>' +
+        '</div>' +
+        '<div class="weekly-insight">🏆 Best: <strong>' + (best.name||'—') + '</strong> (' + (best.score||0) + ')<br>⚠️ Worst: <strong>' + (worst.name||'—') + '</strong> (' + (worst.score||0) + ')<br>' + insight + '</div></div>';
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 9: SHARE SCORE
+// ═══════════════════════════════════════════
+async function shareScore(product) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800; canvas.height = 800;
+    const ctx = canvas.getContext('2d');
+    const sColor = getScoreColor(product.score);
+
+    ctx.fillStyle = '#070D1A';
+    ctx.fillRect(0, 0, 800, 800);
+
+    const grad = ctx.createRadialGradient(400, 400, 0, 400, 400, 480);
+    grad.addColorStop(0, 'rgba(137,207,240,0.12)');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 800, 800);
+
+    ctx.fillStyle = '#89CFF0';
+    ctx.font = 'bold 28px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('BARE', 400, 70);
+
+    ctx.font = '110px serif';
+    ctx.fillText(product.emoji || '🛒', 400, 240);
+
+    ctx.fillStyle = '#F5EEE6';
+    ctx.font = 'bold 34px system-ui, sans-serif';
+    const name = product.name.length > 30 ? product.name.slice(0,30) + '...' : product.name;
+    ctx.fillText(name, 400, 320);
+
+    ctx.fillStyle = '#8BA8C4';
+    ctx.font = '22px system-ui, sans-serif';
+    ctx.fillText(product.brand || '', 400, 358);
+
+    ctx.beginPath();
+    ctx.arc(400, 510, 92, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(400, 510, 92, -Math.PI/2, -Math.PI/2 + (Math.PI*2*(product.score/100)));
+    ctx.strokeStyle = sColor;
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    ctx.fillStyle = sColor;
+    ctx.font = 'bold 60px system-ui, sans-serif';
+    ctx.fillText(product.score, 400, 532);
+    ctx.fillStyle = '#8BA8C4';
+    ctx.font = '20px system-ui, sans-serif';
+    ctx.fillText('/ 100', 400, 566);
+
+    ctx.fillStyle = '#F5EEE6';
+    ctx.font = 'bold 26px system-ui, sans-serif';
+    ctx.fillText(product.label || '', 400, 650);
+
+    ctx.fillStyle = '#4A6680';
+    ctx.font = '18px system-ui, sans-serif';
+    ctx.fillText('bthorpe99.github.io/bare-app', 400, 760);
+
+    canvas.toBlob(async blob => {
+        const file = new File([blob], 'bare-score.png', { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ title: product.name + ' - Score ' + product.score + '/100', text: 'Check this score on Bare!', files: [file] });
+                return;
+            } catch(e) {}
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'bare-score.png'; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+}
+
+// ═══════════════════════════════════════════
+// FEATURE 10: STORE AVAILABILITY
+// ═══════════════════════════════════════════
+const STORE_MAP = {
+    'kirkland':'Costco','costco':'Costco',
+    'h-e-b':'H-E-B','heb':'H-E-B',
+    "trader joe":'Trader Joes',
+    '365':'Whole Foods','whole foods':'Whole Foods',
+    'great value':'Walmart','walmart':'Walmart',
+    "member's mark":'Sams Club','sams club':'Sams Club',
+    'good & gather':'Target','target':'Target',
+};
+const NATIONAL_STORES = ['Walmart','Target','Kroger','Whole Foods','H-E-B'];
+
+function getStoreAvailability(product) {
+    const b = (product.brand || '').toLowerCase();
+    for (const [key, store] of Object.entries(STORE_MAP)) {
+        if (b.includes(key)) return [store];
+    }
+    return NATIONAL_STORES;
+}
+
+function renderStoreAvailability(product) {
+    const stores = getStoreAvailability(product);
+    return '<div class="store-avail-wrap"><div class="store-avail-title">Available At</div><div class="store-avail-list">' +
+        stores.map(s => '<div class="store-avail-chip"><div class="store-dot"></div>' + s + '</div>').join('') +
+        '</div></div>';
+}
+
+// ═══════════════════════════════════════════
+// FEATURE INIT — call at startup
+// ═══════════════════════════════════════════
+function initFeatures() {
+    loadStreakData();
+    initKidMode();
+}
+
 </script>
 </body>
 </html>
