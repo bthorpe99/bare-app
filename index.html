@@ -4554,7 +4554,7 @@ async function openUnknownBarcode(barcode) {
                     <div class="slider-track"><div class="slider-thumb" style="left:${slider*100}%"></div></div>
                     <div class="slider-labels"><span>Minimal</span><span>Ultra-Processed</span></div>
                 </div>
-                ${warnings.length ? `<div class="warnings-list">${warnings.map(w=>`<div class="warning-tag">&#x26A0; ${w}</div>`).join('')}</div>` : ''}
+                ${warnings.length ? '<div class="warnings-list">'+warnings.map(w=>'<div class="warning-tag">&#x26A0; '+w+'</div>').join('')+'</div>' : ''}
             </div>
             <div class="breakdown-card" style="margin-bottom:22px">
                 <div class="breakdown-row">
@@ -4869,7 +4869,7 @@ function renderSheet(prod) {
                 <div class="slider-track"><div class="slider-thumb" style="left:${processing.slider*100}%"></div></div>
                 <div class="slider-labels"><span>Minimal</span><span>Ultra-Processed</span></div>
             </div>
-            ${processing.warnings.length ? `<div class="warnings-list">${processing.warnings.map(w=>`<div class="warning-tag">⚠ ${w}</div>`).join('')}</div>` : ''}
+            ${processing.warnings.length ? '<div class="warnings-list">'+processing.warnings.map(w=>'<div class="warning-tag">&#x26A0; '+w+'</div>').join('')+'</div>' : ''}
         </div>
         <div class="breakdown-card" style="margin-bottom:22px">
             <div class="breakdown-row">
@@ -4879,7 +4879,7 @@ function renderSheet(prod) {
                 </div>
                 <div class="status-chip ${STATUS_CLASS[toxins.status]||'status-neutral'}">${toxins.status}</div>
             </div>
-            ${toxins.action ? `<div class="breakdown-detail">${toxins.action}</div>` : ''}
+            ${toxins.action ? '<div class="breakdown-detail">'+toxins.action+'</div>' : ''}
         </div>
         <div class="breakdown-title">Ingredients</div>
         <div class="ingredients-list">
