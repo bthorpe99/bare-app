@@ -15,18 +15,18 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            /* ── Brand palette: deep navy + electric violet ── */
-            --bg:       #080816;
-            --surface:  #10102A;
-            --surface2: #181834;
-            --border:   rgba(255,255,255,0.07);
-            --accent:   #7C3AED;
-            --accent2:  #9F67FF;
-            --accent-glow: rgba(124,58,237,0.35);
-            --accent-dim:  rgba(124,58,237,0.12);
-            --text:     #F0EFFE;
-            --text-2:   #9896C0;
-            --text-3:   #5E5C80;
+            /* ── Brand palette: sky blue + lavender (matched to Bare mascot) ── */
+            --bg:       #070D1A;
+            --surface:  #0D1728;
+            --surface2: #142035;
+            --border:   rgba(137,207,240,0.1);
+            --accent:   #89CFF0;
+            --accent2:  #B39DDB;
+            --accent-glow: rgba(137,207,240,0.3);
+            --accent-dim:  rgba(137,207,240,0.1);
+            --text:     #F5EEE6;
+            --text-2:   #8BA8C4;
+            --text-3:   #4A6680;
             /* score neons */
             --neon-green:  #00E676;
             --neon-mint:   #64FFDA;
@@ -41,7 +41,7 @@
         html, body {
             height: 100%; width: 100%; overflow: hidden;
             font-family: 'Space Grotesk', -apple-system, sans-serif;
-            background: #020210;
+            background: #040A14;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -49,7 +49,7 @@
             height: 100%; width: 100%; max-width: 430px;
             margin: 0 auto; position: relative; overflow: hidden;
             background: var(--bg);
-            box-shadow: 0 0 80px rgba(124,58,237,0.2), 0 0 0 1px rgba(124,58,237,0.1);
+            box-shadow: 0 0 80px rgba(137,207,240,0.15), 0 0 0 1px rgba(137,207,240,0.08);
         }
 
         /* scrollbar hidden globally */
@@ -74,7 +74,7 @@
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; right: 0;
             height: var(--nav-height);
-            background: rgba(10,10,30,0.92);
+            background: rgba(7,13,26,0.95);
             border-top: 1px solid var(--border);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -97,7 +97,7 @@
         }
         .scan-btn {
             width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(140deg, var(--accent2), var(--accent));
+            background: linear-gradient(140deg, #B39DDB, #89CFF0);
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 0 8px var(--accent-dim), 0 8px 24px var(--accent-glow);
             transform: translateY(-18px);
@@ -114,13 +114,23 @@
 
         /* ── Home ── */
         .home-header {
-            padding: 56px 20px 16px;
+            padding: 52px 20px 16px;
             background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
             border-bottom: 1px solid var(--border);
         }
+        .mascot-row {
+            display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+        }
+        .mascot-img {
+            width: 72px; height: 72px; border-radius: 20px; object-fit: cover;
+            border: 2px solid rgba(137,207,240,0.3);
+            box-shadow: 0 4px 20px rgba(137,207,240,0.2);
+            flex-shrink: 0;
+        }
+        .mascot-text { flex: 1; }
         .home-greeting { font-size: 13px; color: var(--text-3); font-weight: 500; margin-bottom: 4px; }
-        .home-title { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 18px; line-height: 1.15; letter-spacing: -0.5px; }
-        .home-title span { color: var(--accent2); }
+        .home-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 0; line-height: 1.15; letter-spacing: -0.5px; }
+        .home-title span { color: var(--accent); }
         .search-bar {
             display: flex; align-items: center;
             background: var(--surface2); border: 1px solid var(--border);
@@ -497,8 +507,13 @@
     <!-- ═══ HOME ═══ -->
     <div class="view active" id="view-home">
         <div class="home-header">
-            <div class="home-greeting">Know exactly what you're eating 👁</div>
-            <div class="home-title">Real <span>Ingredients.</span> Real Score.</div>
+            <div class="mascot-row">
+                <img src="mascot.png" alt="Bare mascot" class="mascot-img">
+                <div class="mascot-text">
+                    <div class="home-greeting">Know exactly what you're eating</div>
+                    <div class="home-title">Real <span>Ingredients.</span> Real Score.</div>
+                </div>
+            </div>
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-value" id="statScanned">0</div>
